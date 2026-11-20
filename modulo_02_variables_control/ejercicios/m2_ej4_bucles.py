@@ -1,5 +1,6 @@
 """Módulo 2 - Ejercicio 4: bucles."""
 
+# Nota: Intentado primero por mi cuenta y revisado con apoyo de IA para corregir fallos y mejorar el estilo.
 
 def factorial(n: int) -> int:
     """Devuelve el factorial de ``n`` (n >= 0) usando un bucle.
@@ -7,7 +8,10 @@ def factorial(n: int) -> int:
     >>> factorial(5), factorial(0)
     (120, 1)
     """
-    raise NotImplementedError
+    resultado = 1
+    for i in range(1, n + 1):
+        resultado *= i
+    return resultado
 
 
 def es_primo(n: int) -> bool:
@@ -16,7 +20,12 @@ def es_primo(n: int) -> bool:
     >>> es_primo(13), es_primo(15), es_primo(1)
     (True, False, False)
     """
-    raise NotImplementedError
+    if n < 2:
+        return False
+    for divisor in range(2, int(n ** 0.5) + 1):
+        if n % divisor == 0:
+            return False
+    return True
 
 
 def invertir(texto: str) -> str:
@@ -25,7 +34,10 @@ def invertir(texto: str) -> str:
     >>> invertir("Python")
     'nohtyP'
     """
-    raise NotImplementedError
+    resultado = ""
+    for caracter in texto:
+        resultado = caracter + resultado
+    return resultado
 
 
 def contar_vocales(texto: str) -> int:
@@ -34,7 +46,12 @@ def contar_vocales(texto: str) -> int:
     >>> contar_vocales("Programación")
     5
     """
-    raise NotImplementedError
+    vocales = "aeiouáéíóúü"
+    contador = 0
+    for caracter in texto.lower():
+        if caracter in vocales:
+            contador += 1
+    return contador
 
 
 def suma_digitos(numero: int) -> int:
@@ -43,7 +60,12 @@ def suma_digitos(numero: int) -> int:
     >>> suma_digitos(1234), suma_digitos(-905)
     (10, 14)
     """
-    raise NotImplementedError
+    n = abs(numero)
+    total = 0
+    while n > 0:
+        total += n % 10
+        n //= 10
+    return total
 
 
 def fizzbuzz(n: int) -> str:
@@ -55,7 +77,17 @@ def fizzbuzz(n: int) -> str:
     >>> fizzbuzz(5)
     '1 2 Fizz 4 Buzz'
     """
-    raise NotImplementedError
+    elementos = []
+    for i in range(1, n + 1):
+        if i % 3 == 0 and i % 5 == 0:
+            elementos.append("FizzBuzz")
+        elif i % 3 == 0:
+            elementos.append("Fizz")
+        elif i % 5 == 0:
+            elementos.append("Buzz")
+        else:
+            elementos.append(str(i))
+    return " ".join(elementos)
 
 
 def tabla_multiplicar(numero: int) -> str:
@@ -64,7 +96,10 @@ def tabla_multiplicar(numero: int) -> str:
     >>> print(tabla_multiplicar(7).splitlines()[2])
     7 x  3 =  21
     """
-    raise NotImplementedError
+    lineas = []
+    for i in range(1, 11):
+        lineas.append(f"{numero} x {i:2d} = {numero * i:3d}")
+    return "\n".join(lineas)
 
 
 def primer_multiplo_comun(a: int, b: int) -> int:
@@ -73,4 +108,8 @@ def primer_multiplo_comun(a: int, b: int) -> int:
     >>> primer_multiplo_comun(4, 6)
     12
     """
-    raise NotImplementedError
+    paso = max(a, b)
+    multiplo = paso
+    while multiplo % a != 0 or multiplo % b != 0:
+        multiplo += paso
+    return multiplo
