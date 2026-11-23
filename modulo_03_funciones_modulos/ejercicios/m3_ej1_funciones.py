@@ -13,7 +13,7 @@ def area_circulo(radio: float) -> float:
     >>> area_circulo(1)
     3.14
     """
-    raise NotImplementedError
+    return round(math.pi * radio ** 2, 2)
 
 
 def area_rectangulo(base: float, altura: float) -> float:
@@ -22,7 +22,7 @@ def area_rectangulo(base: float, altura: float) -> float:
     >>> area_rectangulo(3, 4)
     12
     """
-    raise NotImplementedError
+    return base * altura
 
 
 def area_triangulo(base: float, altura: float) -> float:
@@ -31,7 +31,7 @@ def area_triangulo(base: float, altura: float) -> float:
     >>> area_triangulo(3, 4)
     6.0
     """
-    raise NotImplementedError
+    return (base * altura) / 2
 
 
 def calcular_area(figura: str, *, radio=None, base=None, altura=None):
@@ -48,7 +48,16 @@ def calcular_area(figura: str, *, radio=None, base=None, altura=None):
     >>> calcular_area("triangulo", base=3) is None
     True
     """
-    raise NotImplementedError
+    nombre = figura.lower()
+
+    if nombre == "circulo" and radio is not None:
+        return area_circulo(radio)
+    if nombre == "rectangulo" and base is not None and altura is not None:
+        return area_rectangulo(base, altura)
+    if nombre == "triangulo" and base is not None and altura is not None:
+        return area_triangulo(base, altura)
+
+    return None
 
 
 def minimo_y_maximo(*numeros):
@@ -61,7 +70,9 @@ def minimo_y_maximo(*numeros):
     >>> minimo_y_maximo()
     (None, None)
     """
-    raise NotImplementedError
+    if not numeros:
+        return (None, None)
+    return (min(numeros), max(numeros))
 
 
 def describir(funcion) -> str:
@@ -72,4 +83,9 @@ def describir(funcion) -> str:
     >>> describir(area_rectangulo)
     'area_rectangulo: Devuelve el área de un rectángulo.'
     """
-    raise NotImplementedError
+    doc = funcion.__doc__
+    if not doc or not doc.strip():
+        return f"{funcion.__name__}: sin documentar"
+
+    primera_linea = doc.strip().splitlines()[0].strip()
+    return f"{funcion.__name__}: {primera_linea}"
