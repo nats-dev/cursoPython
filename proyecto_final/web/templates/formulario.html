@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<header class="cabecera"><h1>{{ titulo }}</h1></header>
+
+<form method="post" class="formulario">
+  <label for="nombre">Nombre</label>
+  <input id="nombre" name="nombre" type="text" required maxlength="{{ max_nombre }}"
+         value="{{ datos.nombre }}" placeholder="Ej.: Leer 20 minutos" autofocus>
+
+  <label for="descripcion">Descripción <span class="meta">(opcional)</span></label>
+  <textarea id="descripcion" name="descripcion" rows="3" maxlength="{{ max_descripcion }}">{{ datos.descripcion }}</textarea>
+
+  <label for="veces_semana">Frecuencia</label>
+  <select id="veces_semana" name="veces_semana">
+    {% for n in range(7, 0, -1) %}
+      <option value="{{ n }}" {% if datos.veces_semana == n %}selected{% endif %}>{{ etiqueta_frecuencia(n) }}</option>
+    {% endfor %}
+  </select>
+  <p class="meta">Los hábitos diarios cuentan la racha en días; los demás, en semanas cumplidas (de lunes a domingo).</p>
+
+  <button class="boton" type="submit">Guardar</button>
+</form>
+{% endblock %}

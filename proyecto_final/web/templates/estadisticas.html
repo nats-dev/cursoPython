@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block titulo %}Estadísticas{% endblock %}
+{% block contenido %}
+<header class="cabecera"><h1>Estadísticas</h1></header>
+
+{% if not graficas %}
+  <section class="vacio">
+    <p>Aún no hay registros. Marca algún hábito como cumplido y aquí aparecerán tus estadísticas.</p>
+  </section>
+{% else %}
+  <section class="cifras">
+    <div class="cifra"><strong>{{ ind.habitos_activos }}</strong><span>hábitos activos</span></div>
+    <div class="cifra"><strong>{{ porcentaje(ind.cumplimiento_medio) }}%</strong><span>cumplimiento medio</span></div>
+    <div class="cifra"><strong>{{ ind.registros_30_dias }}</strong><span>registros en 30 días</span></div>
+    <div class="cifra"><strong>{{ ind.dia_mas_activo|capitalize if ind.dia_mas_activo else '—' }}</strong><span>día más activo</span></div>
+  </section>
+
+  {% if ind.habito_mas_constante %}
+    <p class="destacado">🏆 Tu hábito más constante: <strong>{{ ind.habito_mas_constante }}</strong></p>
+  {% endif %}
+
+  <h2>Cumplimiento por hábito</h2>
+  <img class="grafico" src="data:image/png;base64,{{ graficas.cumplimiento }}" alt="Porcentaje de cumplimiento por hábito">
+
+  <h2>Evolución semanal</h2>
+  <img class="grafico" src="data:image/png;base64,{{ graficas.semanas }}" alt="Registros por semana">
+
+  <h2>¿Qué días cumples más?</h2>
+  <img class="grafico" src="data:image/png;base64,{{ graficas.dias }}" alt="Registros por día de la semana">
+
+  <h2>Detalle</h2>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Hábito</th><th>Racha</th><th>Mejor</th><th>Total</th><th>28 d</th></tr></thead>
+      <tbody>
+        {% for f in tabla %}
+          <tr>
+            <td>{{ f.habito }}</td>
+            <td>{{ f.racha_actual }} {{ f.unidad_racha }}</td>
+            <td>{{ f.mejor_racha }} {{ f.unidad_racha }}</td>
+            <td>{{ f.total }}</td>
+            <td>{{ porcentaje(f.cumplimiento) }}%</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+{% endblock %}

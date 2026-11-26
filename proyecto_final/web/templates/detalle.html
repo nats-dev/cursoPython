@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block titulo %}{{ habito.nombre }}{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <p class="fecha">{{ etiqueta_frecuencia(habito.veces_semana) }}{% if habito.archivado %} · archivado{% endif %}</p>
+  <h1>{{ habito.nombre }}</h1>
+  {% if habito.descripcion %}<p>{{ habito.descripcion }}</p>{% endif %}
+</header>
+
+<section class="cifras">
+  <div class="cifra"><strong>{{ racha_texto(habito, hoy) }}</strong><span>racha actual</span></div>
+  <div class="cifra"><strong>{{ habito.mejor_racha() }}</strong><span>mejor racha ({{ 'días' if habito.es_diario else 'semanas' }})</span></div>
+  <div class="cifra"><strong>{{ habito.total }}</strong><span>veces en total</span></div>
+  <div class="cifra"><strong>{{ porcentaje(habito.cumplimiento(hoy)) }}%</strong><span>últimos 28 días</span></div>
+</section>
+
+<h2>Últimas semanas</h2>
+<p class="meta">Toca un día para marcarlo o desmarcarlo.</p>
+<div class="calendario" role="group" aria-label="Calendario de las últimas semanas">
+  {% for nombre in ['L', 'M', 'X', 'J', 'V', 'S', 'D'] %}<span class="dia-cabecera">{{ nombre }}</span>{% endfor %}
+  {% for semana in calendario %}
+    {% for dia in semana %}
+      <form method="post" action="{{ url_for('rutas.alternar', id_habito=habito.id) }}">
+        <input type="hidden" name="fecha" value="{{ dia.fecha.isoformat() }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="celda {% if dia.hecho %}hecha{% endif %} {% if dia.hoy %}es-hoy{% endif %}"
+                {% if dia.futuro or habito.archivado %}disabled{% endif %}
+                aria-pressed="{{ 'true' if dia.hecho else 'false' }}"
+                aria-label="{{ dia.fecha|fecha_larga }}">{{ dia.fecha.day }}</button>
+      </form>
+    {% endfor %}
+  {% endfor %}
+</div>
+
+<h2>Historial</h2>
+<img class="grafico" src="data:image/png;base64,{{ mapa }}" alt="Mapa de calor de las últimas 20 semanas">
+
+<div class="acciones">
+  {% if not habito.archivado %}
+    <a class="boton secundario" href="{{ url_for('rutas.editar', id_habito=habito.id) }}">Editar</a>
+    <form method="post" action="{{ url_for('rutas.archivar', id_habito=habito.id) }}">
+      <button class="boton secundario" type="submit">Archivar</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block titulo %}Mis hábitos{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <h1>Mis hábitos</h1>
+  <a class="boton" href="{{ url_for('rutas.nuevo') }}">+ Nuevo hábito</a>
+</header>
+
+{% if not activos and not archivados %}
+  <section class="vacio"><p>No hay hábitos todavía.</p></section>
+{% endif %}
+
+<ul class="lista">
+  {% for h in activos %}
+    <li class="tarjeta">
+      <a class="info" href="{{ url_for('rutas.detalle', id_habito=h.id) }}">
+        <strong>{{ h.nombre }}</strong>
+        <span class="meta">{{ etiqueta_frecuencia(h.veces_semana) }} · {{ porcentaje(h.cumplimiento(hoy)) }}% últimos 28 días</span>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+
+{% if archivados %}
+  <h2>Archivados</h2>
+  <ul class="lista">
+    {% for h in archivados %}
+      <li class="tarjeta archivada">
+        <div class="info"><strong>{{ h.nombre }}</strong><span class="meta">{{ h.total }} registros</span></div>
+        <form method="post" action="{{ url_for('rutas.restaurar', id_habito=h.id) }}">
+          <button class="boton secundario" type="submit">Restaurar</button>
+        </form>
+        <form method="post" action="{{ url_for('rutas.eliminar', id_habito=h.id) }}"
+              onsubmit="return confirm('¿Eliminar «{{ h.nombre }}» y todos sus registros? No se puede deshacer.')">
+          <button class="boton peligro" type="submit">Eliminar</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

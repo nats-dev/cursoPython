@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}Hoy{% endblock %}
+{% block contenido %}
+<header class="cabecera">
+  <p class="fecha">{{ hoy|fecha_larga }}</p>
+  <h1>Hoy</h1>
+  {% if total %}
+    <div class="progreso" role="progressbar" aria-valuenow="{{ proporcion }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="progreso-barra" style="width: {{ proporcion }}%"></div>
+    </div>
+    <p class="meta">{{ hechos }} de {{ total }} completados</p>
+  {% endif %}
+</header>
+
+{% if not habitos %}
+  <section class="vacio">
+    <p>Todavía no tienes ningún hábito.</p>
+    <a class="boton" href="{{ url_for('rutas.nuevo') }}">Crear mi primer hábito</a>
+  </section>
+{% endif %}
+
+<ul class="lista">
+  {% for h in habitos %}
+    {% set hecho = h.cumplido(hoy) %}
+    <li class="tarjeta {% if hecho %}hecha{% endif %}">
+      <form method="post" action="{{ url_for('rutas.alternar', id_habito=h.id) }}">
+        <input type="hidden" name="fecha" value="{{ hoy.isoformat() }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button class="check" type="submit" aria-pressed="{{ 'true' if hecho else 'false' }}"
+                aria-label="{{ 'Desmarcar' if hecho else 'Marcar' }} {{ h.nombre }}">{% if hecho %}✓{% endif %}</button>
+      </form>
+      <a class="info" href="{{ url_for('rutas.detalle', id_habito=h.id) }}">
+        <strong>{{ h.nombre }}</strong>
+        <span class="meta">
+          🔥 {{ racha_texto(h, hoy) }}
+          {% if not h.es_diario %}· {{ h.marcas_semana(hoy) }}/{{ h.veces_semana }} esta semana{% endif %}
+        </span>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}
