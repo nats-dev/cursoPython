@@ -15,7 +15,16 @@ CAMPOS = ["fecha", "vendedor", "region", "producto", "categoria", "unidades", "p
 CAMPOS_RESUMEN = ["region", "ventas", "unidades", "importe"]
 
 
-# TODO: define aquí las excepciones ErrorDeImportacion, FicheroNoValido y FilaNoValida
+class ErrorDeImportacion(Exception):
+    """Error base del importador de ventas."""
+
+
+class FicheroNoValido(ErrorDeImportacion):
+    """El fichero no existe o le faltan columnas requeridas."""
+
+
+class FilaNoValida(ErrorDeImportacion):
+    """Una fila contiene algún dato vacío o con formato incorrecto."""
 
 
 def validar_fila(fila: dict) -> dict:
@@ -31,7 +40,35 @@ def validar_fila(fila: dict) -> dict:
     - "unidades no válidas: <valor>" si no es un entero mayor que cero
     - "precio no válido: <valor>" si no es un número mayor que cero
     """
-    raise NotImplementedError
+    venta: dict = {}
+    for campo in CAMPOS:
+        valor = fila.get(campo)
+        if valor is None or not str(valor).strip():
+            raise FilaNoValida(f"falta el campo {campo}")
+        venta[campo] = str(valor).strip()
+
+    try:
+        date.fromisoformat(venta["fecha"])
+    except ValueError as error:
+        raise FilaNoValida(f"fecha no válida: {venta['fecha']}") from error
+
+    try:
+        unidades = int(venta["unidades"])
+    except ValueError as error:
+        raise FilaNoValida(f"unidades no válidas: {venta['unidades']}") from error
+    if unidades <= 0:
+        raise FilaNoValida(f"unidades no válidas: {venta['unidades']}")
+    venta["unidades"] = unidades
+
+    try:
+        precio = float(venta["precio"])
+    except ValueError as error:
+        raise FilaNoValida(f"precio no válido: {venta['precio']}") from error
+    if precio <= 0:
+        raise FilaNoValida(f"precio no válido: {venta['precio']}")
+    venta["precio"] = precio
+
+    return venta
 
 
 def importar_ventas(ruta) -> tuple[list[dict], list[str]]:
@@ -49,7 +86,31 @@ def importar_ventas(ruta) -> tuple[list[dict], list[str]]:
     - "Faltan columnas: <nombres separados por coma y espacio>" si a la
       cabecera le falta alguna de ``CAMPOS``, en el orden de ``CAMPOS``
     """
-    raise NotImplementedError
+    try:
+        fichero = open(ruta, encoding="utf-8", newline="")
+    except FileNotFoundError as error:
+        raise FicheroNoValido(f"No existe el fichero {ruta}") from error
+
+    ventas: list[dict] = []
+    errores: list[str] = []
+
+    with fichero:
+        lector = csv.DictReader(fichero)
+        columnas = lector.fieldnames or []
+        faltantes = [campo for campo in CAMPOS if campo not in columnas]
+        if faltantes:
+            raise FicheroNoValido(f"Faltan columnas: {', '.join(faltantes)}")
+
+        for num_linea, fila in enumerate(lector, start=2):
+            try:
+                venta = validar_fila(fila)
+            except FilaNoValida as error:
+                errores.append(f"Línea {num_linea}: {error}")
+                logger.warning("Línea %d descartada: %s", num_linea, error)
+            else:
+                ventas.append(venta)
+
+    return ventas, errores
 
 
 def resumen_por_region(ventas: list[dict]) -> list[dict]:
@@ -59,17 +120,47 @@ def resumen_por_region(ventas: list[dict]) -> list[dict]:
     la región, el número de ventas, las unidades totales y el importe total
     con dos decimales. Ordenada de mayor a menor importe.
     """
-    raise NotImplementedError
+    acumulado: dict[str, dict] = {}
+    for venta in ventas:
+        region = venta["region"]
+        if region not in acumulado:
+            acumulado[region] = {
+                "region": region,
+                "ventas": 0,
+                "unidades": 0,
+                "importe": 0.0,
+            }
+        acumulado[region]["ventas"] += 1
+        acumulado[region]["unidades"] += venta["unidades"]
+        acumulado[region]["importe"] += venta["unidades"] * venta["precio"]
+
+    resumen = [
+        {
+            "region": datos["region"],
+            "ventas": datos["ventas"],
+            "unidades": datos["unidades"],
+            "importe": round(datos["importe"], 2),
+        }
+        for datos in acumulado.values()
+    ]
+    resumen.sort(key=lambda fila: fila["importe"], reverse=True)
+    return resumen
 
 
 def exportar_resumen(ruta, ventas: list[dict]) -> None:
     """Escribe en un CSV el resumen por región, con la cabecera ``CAMPOS_RESUMEN``."""
-    raise NotImplementedError
+    resumen = resumen_por_region(ventas)
+    with open(ruta, "w", encoding="utf-8", newline="") as fichero:
+        escritor = csv.DictWriter(fichero, fieldnames=CAMPOS_RESUMEN)
+        escritor.writeheader()
+        escritor.writerows(resumen)
 
 
 def escribir_errores(ruta, errores: list[str]) -> None:
     """Escribe los errores en un fichero de texto, uno por línea."""
-    raise NotImplementedError
+    with open(ruta, "w", encoding="utf-8") as fichero:
+        for error in errores:
+            fichero.write(f"{error}\n")
 
 
 def procesar(entrada, carpeta_salida) -> dict:
@@ -83,7 +174,21 @@ def procesar(entrada, carpeta_salida) -> dict:
     Si el fichero de entrada no vale, ``FicheroNoValido`` sube sin capturar
     y no se escribe nada.
     """
-    raise NotImplementedError
+    ventas, errores = importar_ventas(entrada)
+
+    salida = Path(carpeta_salida)
+    salida.mkdir(parents=True, exist_ok=True)
+    exportar_resumen(salida / "resumen.csv", ventas)
+    escribir_errores(salida / "errores.txt", errores)
+
+    validas = len(ventas)
+    descartadas = len(errores)
+    logger.info("Importación terminada: %d válidas y %d descartadas", validas, descartadas)
+    return {
+        "leidas": validas + descartadas,
+        "validas": validas,
+        "descartadas": descartadas,
+    }
 
 
 def main(argumentos: list[str] | None = None) -> int:
