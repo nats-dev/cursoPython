@@ -32,7 +32,7 @@
       <a class="info" href="{{ url_for('rutas.detalle', id_habito=h.id) }}">
         <strong>{{ h.nombre }}</strong>
         <span class="meta">
-          🔥 {{ racha_texto(h, hoy) }}
+          ⚡ {{ racha_texto(h, hoy) }}
           {% if not h.es_diario %}· {{ h.marcas_semana(hoy) }}/{{ h.veces_semana }} esta semana{% endif %}
         </span>
       </a>

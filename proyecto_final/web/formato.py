@@ -27,3 +27,8 @@ def etiqueta_frecuencia(veces_semana: int) -> str:
 
 def porcentaje(proporcion: float) -> int:
     return round(proporcion * 100)
+
+
+def unidad(cantidad: int, plural: str) -> str:
+    """Pone la unidad en singular si la cantidad es 1: («1 día», «2 días», «1 semana»)."""
+    return plural[:-1] if cantidad == 1 else plural

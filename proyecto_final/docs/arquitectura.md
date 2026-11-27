@@ -179,8 +179,8 @@ de ahí todo son operaciones de columna, sin recorrer filas:
 | `tabla_habitos` / `indicadores` | agregaciones y ordenación estable |
 
 Los gráficos (`graficos.py`) usan el backend `Agg` de Matplotlib, se dibujan en memoria y se incrustan
-en la página como PNG en base64 con fondo transparente y colores neutros, para que funcionen en modo
-claro y oscuro.
+en la página como PNG en base64 con fondo transparente. Siguen la paleta neón de la interfaz (cian, rosa, lima)
+y dibujan cada barra con un halo translúcido para dar efecto de resplandor.
 
 ## 7. Capa web
 
@@ -203,7 +203,8 @@ Detalles:
 - **Redirecciones seguras:** el campo `next` solo se acepta si es una ruta interna (`/...`, nunca `//` ni URL absolutas).
 - **Plantillas con escape automático** de Jinja2: un nombre de hábito como `<script>` se muestra como texto.
 - **Accesibilidad:** botones con `aria-label` y `aria-pressed`, `aria-current` en la navegación, foco visible y `prefers-reduced-motion`.
-- **Mobile-first:** una columna, botones táctiles de 48 px, barra de navegación inferior y `safe-area-inset` para móviles con notch.
+- **Mobile-first:** una columna, botones táctiles de 54 px, barra de navegación inferior flotante y `safe-area-inset` para móviles con notch.
+- **Estética cyber Y2K:** todo el diseño sale de variables CSS (`--cian`, `--rosa`, `--lima`…) en `web/static/style.css`: rejilla y brillos de fondo con `radial-gradient`, tarjetas de cristal con `backdrop-filter`, botones «gel» con degradados de corte duro y animaciones desactivadas con `prefers-reduced-motion`.
 - **`create_app(carpeta_datos, hoy)`:** factoría que permite inyectar la carpeta de datos y el «hoy» en los tests.
 
 ## 8. Estrategia de pruebas

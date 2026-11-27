@@ -16,7 +16,7 @@
   </section>
 
   {% if ind.habito_mas_constante %}
-    <p class="destacado">🏆 Tu hábito más constante: <strong>{{ ind.habito_mas_constante }}</strong></p>
+    <p class="destacado">★ Tu hábito más constante: <strong>{{ ind.habito_mas_constante }}</strong></p>
   {% endif %}
 
   <h2>Cumplimiento por hábito</h2>
@@ -36,8 +36,8 @@
         {% for f in tabla %}
           <tr>
             <td>{{ f.habito }}</td>
-            <td>{{ f.racha_actual }} {{ f.unidad_racha }}</td>
-            <td>{{ f.mejor_racha }} {{ f.unidad_racha }}</td>
+            <td>{{ f.racha_actual }} {{ unidad(f.racha_actual, f.unidad_racha) }}</td>
+            <td>{{ f.mejor_racha }} {{ unidad(f.mejor_racha, f.unidad_racha) }}</td>
             <td>{{ f.total }}</td>
             <td>{{ porcentaje(f.cumplimiento) }}%</td>
           </tr>

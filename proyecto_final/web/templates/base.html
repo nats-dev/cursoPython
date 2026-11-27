@@ -3,14 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#16a34a">
+  <meta name="theme-color" content="#06041a">
+  <meta name="color-scheme" content="dark">
   <title>{% block titulo %}Hábitos{% endblock %} · Habit Tracker</title>
   <link rel="manifest" href="{{ url_for('rutas.manifest') }}">
   <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
+  {# Tipografías retro-futuristas. Si no hay conexión se usan las de reserva del CSS. #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <main class="contenedor">
+    <div class="marca"><b>✦ Habit.Tracker</b><span class="estado">online</span></div>
+
     {% with mensajes = get_flashed_messages(with_categories=true) %}
       {% for categoria, mensaje in mensajes %}
         <div class="aviso aviso-{{ categoria }}" role="status">{{ mensaje }}</div>
@@ -21,10 +28,18 @@
 
   {% set ep = request.endpoint %}
   <nav class="barra" aria-label="Navegación principal">
-    <a href="{{ url_for('rutas.hoy') }}" {% if ep == 'rutas.hoy' %}aria-current="page"{% endif %}><span>✓</span>Hoy</a>
-    <a href="{{ url_for('rutas.habitos') }}" {% if ep in ('rutas.habitos', 'rutas.detalle', 'rutas.editar') %}aria-current="page"{% endif %}><span>☰</span>Hábitos</a>
-    <a href="{{ url_for('rutas.nuevo') }}" {% if ep == 'rutas.nuevo' %}aria-current="page"{% endif %}><span>＋</span>Nuevo</a>
-    <a href="{{ url_for('rutas.estadisticas') }}" {% if ep == 'rutas.estadisticas' %}aria-current="page"{% endif %}><span>▥</span>Estadísticas</a>
+    <a href="{{ url_for('rutas.hoy') }}" {% if ep == 'rutas.hoy' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>Hoy
+    </a>
+    <a href="{{ url_for('rutas.habitos') }}" {% if ep in ('rutas.habitos', 'rutas.detalle', 'rutas.editar') %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r=".8"/><circle cx="4.5" cy="12" r=".8"/><circle cx="4.5" cy="18" r=".8"/></svg>Hábitos
+    </a>
+    <a href="{{ url_for('rutas.nuevo') }}" {% if ep == 'rutas.nuevo' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Nuevo
+    </a>
+    <a href="{{ url_for('rutas.estadisticas') }}" {% if ep == 'rutas.estadisticas' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-9M12 20V4M19 20v-6"/></svg>Estadísticas
+    </a>
   </nav>
 </body>
 </html>

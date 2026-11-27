@@ -30,6 +30,7 @@ def create_app(carpeta_datos=None, hoy=None) -> Flask:
     app.jinja_env.globals["racha_texto"] = formato.racha_texto
     app.jinja_env.globals["etiqueta_frecuencia"] = formato.etiqueta_frecuencia
     app.jinja_env.globals["porcentaje"] = formato.porcentaje
+    app.jinja_env.globals["unidad"] = formato.unidad
 
     app.register_blueprint(bp)
 

@@ -261,8 +261,8 @@ def manifest():
         "description": "Registra tus hábitos y mide tu constancia.",
         "start_url": "/",
         "display": "standalone",
-        "background_color": "#f6f7f9",
-        "theme_color": "#16a34a",
+        "background_color": "#06041a",
+        "theme_color": "#06041a",
         "icons": [{"src": url_for("static", filename="icon.svg"), "sizes": "any",
                    "type": "image/svg+xml", "purpose": "any"}],
     })

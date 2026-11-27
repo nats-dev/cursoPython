@@ -177,3 +177,11 @@ def test_el_nombre_se_escapa_en_html(cliente):
     html = cliente.get("/").get_data(as_text=True)
     assert "<script>alert(1)</script>" not in html
     assert "&lt;script&gt;" in html
+
+
+def test_formato_singular_y_plural():
+    from web.formato import unidad
+    assert unidad(1, "semanas") == "semana"
+    assert unidad(1, "días") == "día"
+    assert unidad(0, "semanas") == "semanas"
+    assert unidad(3, "días") == "días"
